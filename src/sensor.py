@@ -90,7 +90,6 @@ print("Getting data from coin api...", end="")
 for coin in COINS:
     url = f'https://rest.coinapi.io/v1/exchangerate/{coin}/USD'
     res = requests.get(url, headers=COIN_HEADERS)
-    print(CRYPTO_API_KEY)
     dict[f"{coin}_PRICE_USD"] = float((res.json())["rate"])
 print("Done")
 
@@ -100,9 +99,9 @@ for mc in MONITORED_COUNTRIES:
     querystring = {"country": mc}
     response = requests.request("GET", URL_COVID, headers=HEADERS_COVID, params=querystring)
     data = response.json()["stat_by_country"][-1]
-    dict[f"{mc}_total_cases"] = data["total_cases"]
-    dict[f"{mc}_new_cases"] = data["new_cases"]
-    dict[f"{mc}_total_deaths"] = data["total_deaths"]
+    dict[f"{mc}_total_cases"] = data["total_cases"].replace(",", ".")
+    dict[f"{mc}_new_cases"] = data["new_cases"].replace(",", ".")
+    dict[f"{mc}_total_deaths"] = data["total_deaths"].replace(",", ".")
 print("Done")
 
 # Fetch tweets and determine if they have useful data
