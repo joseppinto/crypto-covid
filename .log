@@ -1,0 +1,12 @@
+Getting data from coin api...7B1926D0-7FB2-4354-A8F0-3FB2B8D1F00D
+7B1926D0-7FB2-4354-A8F0-3FB2B8D1F00D
+7B1926D0-7FB2-4354-A8F0-3FB2B8D1F00D
+7B1926D0-7FB2-4354-A8F0-3FB2B8D1F00D
+Done
+Getting data from COVID19 api...Done
+Starting to fetch twitter data...
+Processing BTC tweets...Done
+Processing ETH tweets...Done
+Processing XRP tweets...Done
+Processing LTC tweets...Done
+Writing to dataset file(../data/dataset.csv)...Done
