@@ -73,9 +73,9 @@ def simple_sentiment(text):
     if pos_words > neg_words:
         return 'Positive'
     elif pos_words < neg_words:
-        return 'Neutral'
-    elif pos_words == neg_words:
         return 'Negative'
+    elif pos_words == neg_words:
+        return 'Neutral'
 
 # Start of script flow
 # Initialize our data row as a dict with a timestamp (minute precision)
@@ -83,7 +83,7 @@ dict = {}
 
 time = str(datetime.now())[0:16]
 dict["time"] = time
-
+print("Current time: " + time)
 
 # Get data on our selected cryptocurrencies
 print("Getting data from coin api...", end="")
@@ -99,9 +99,10 @@ for mc in MONITORED_COUNTRIES:
     querystring = {"country": mc}
     response = requests.request("GET", URL_COVID, headers=HEADERS_COVID, params=querystring)
     data = response.json()["stat_by_country"][-1]
-    dict[f"{mc}_total_cases"] = data["total_cases"].replace(",", ".")
-    dict[f"{mc}_new_cases"] = data["new_cases"].replace(",", ".")
-    dict[f"{mc}_total_deaths"] = data["total_deaths"].replace(",", ".")
+    dict[f"{mc}_total_cases"] = data["total_cases"].replace(",", "")
+    new_cases = data["new_cases"].replace(",", "")
+    dict[f"{mc}_new_cases"] = "0" if new_cases == "" else new_cases
+    dict[f"{mc}_total_deaths"] = data["total_deaths"].replace(",", "")
 print("Done")
 
 # Fetch tweets and determine if they have useful data
@@ -148,3 +149,4 @@ file.write(line[:-2] + "\n")
 
 file.close()
 print("Done")
+print("----------------------------------------------------")
