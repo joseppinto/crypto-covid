@@ -1,14 +1,10 @@
 import requests
 from datetime import datetime
 from twitter import Twitter, OAuth
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import opinion_lexicon
 from nltk.tokenize import treebank
 import sys
 import os.path
-from os import path
 from ada import *
 import json
 
@@ -51,13 +47,6 @@ HASHTAGS['XRP'] = ['ripple', 'xrp']
 HASHTAGS['LTC'] = ['litecoin', 'ltc']
 SINCE_ID = {}
 SINCE_ID['BTC'] = 0
-
-# NLP settings
-STOP_WORDS=set(stopwords.words("english"))
-SELECTED_POS_TAGS = ['JJ', 'JJR', 'JJS', 'MD',
-                     'RB', 'RBR', 'RBS', 'UH', 'VB',
-                     'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
-
 
 # NLP function to determine if tweet has positive, neutral or negative sentiment
 def simple_sentiment(text):
@@ -119,8 +108,6 @@ for coin in COINS:
     for h in HASHTAGS[coin]:
 
         query = t.search.tweets(q= f'%23{h}', lang='en')
-        ps = PorterStemmer()
-        lem = WordNetLemmatizer()
         for s in query['statuses']:
             sentiment = simple_sentiment(s['text'])
             balance[sentiment] = balance.get(sentiment, 0) + 1
@@ -136,7 +123,7 @@ for coin in COINS:
 
 # Print new row to dataset
 print(f"Writing to dataset file({DATASET_FILE})...", end="")
-if path.exists(DATASET_FILE):
+if os.path.exists(DATASET_FILE):
     file = open(DATASET_FILE, 'a')
 else:
     file = open(DATASET_FILE, 'w+')
