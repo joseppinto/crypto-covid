@@ -9,6 +9,8 @@ from nltk.tokenize import treebank
 import sys
 import os.path
 from os import path
+from ada import *
+import json
 
 
 if len(sys.argv) < 2:
@@ -19,7 +21,8 @@ DATASET_FILE = sys.argv[1]
 
 
 # CRYPTO API SETTINGS
-CRYPTO_API_KEY = os.environ.get("CRYPTO_API_KEY")
+CRYPTO_API_NUMBER = int(os.environ.get("CRYPTO_API_NUMBER"))
+CRYPTO_API_KEY = os.environ.get("CRYPTO_API_KEY").split("/")[CRYPTO_API_NUMBER]
 COIN_HEADERS = {'X-CoinAPI-Key': CRYPTO_API_KEY}
 COINS = ['BTC', 'ETH', 'XRP', 'LTC']
 
@@ -86,7 +89,7 @@ dict["time"] = time
 print("Current time: " + time)
 
 # Get data on our selected cryptocurrencies
-print("Getting data from coin api...", end="")
+print(f"Getting data from coin api with key no.{CRYPTO_API_NUMBER}...", end="")
 for coin in COINS:
     url = f'https://rest.coinapi.io/v1/exchangerate/{coin}/USD'
     res = requests.get(url, headers=COIN_HEADERS)
@@ -122,9 +125,9 @@ for coin in COINS:
             sentiment = simple_sentiment(s['text'])
             balance[sentiment] = balance.get(sentiment, 0) + 1
 
-    if balance['Positive'] > balance['Negative']:
+    if balance.get('Positive', 0) > balance.get('Negative', 0):
         dict[f"{coin}_twitter"] = 1
-    elif balance['Positive'] < balance['Negative']:
+    elif balance.get('Positive', 0) < balance.get('Negative', 0):
         dict[f"{coin}_twitter"] = 0
     else:
         dict[f"{coin}_twitter"] = 0.5
@@ -148,5 +151,13 @@ for c in dict.values():
 file.write(line[:-2] + "\n")
 
 file.close()
+print("Done")
+
+
+
+
+# Send data to Adafruit IO feed
+print("Sending data to Adafruit IO...")
+send_ada(json.dumps(dict))
 print("Done")
 print("----------------------------------------------------")
