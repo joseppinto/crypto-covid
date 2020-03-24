@@ -4,4 +4,4 @@ source /home/random/venv/bin/activate
 source ./export_secrets.sh
 
 # Run script sensor to collect data
-python sensor.py ../data/dataset.csv >> ../.log 2>&1
+python3 sensor.py ../data/dataset.csv >> ../.log 2>&1
