@@ -16,11 +16,21 @@ if len(sys.argv) < 2:
 DATASET_FILE = sys.argv[1]
 
 
+# rapid api key
+RAPID_API_KEY = os.environ.get("RAPID_API_KEY")
+
+
 # CRYPTO API SETTINGS
-CRYPTO_API_NUMBER = int(os.environ.get("CRYPTO_API_NUMBER"))
-CRYPTO_API_KEY = os.environ.get("CRYPTO_API_KEY").split("/")[CRYPTO_API_NUMBER]
-COIN_HEADERS = {'X-CoinAPI-Key': CRYPTO_API_KEY}
-COINS = ['BTC', 'ETH', 'XRP', 'LTC']
+COIN_HEADERS = {
+    'x-rapidapi-host': "coingecko.p.rapidapi.com",
+    'x-rapidapi-key': RAPID_API_KEY
+    }
+
+COIN_URL = 'https://coingecko.p.rapidapi.com/simple/price'
+
+COINS = ['bitcoin', 'ethereum', 'ripple', 'litecoin']
+
+
 
 # COVID API SETTINGS
 URL_COVID = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_particular_country.php"
@@ -28,10 +38,9 @@ MONITORED_COUNTRIES = ['China', 'Italy', 'Iran', 'Spain',
                        'Germany', 'USA', 'France', 'S. Korea',
                        'Switzerland', 'UK', 'Portugal'
                        ]
-COVID_API_KEY = os.environ.get("COVID_API_KEY")
 HEADERS_COVID = {
     'x-rapidapi-host': "coronavirus-monitor.p.rapidapi.com",
-    'x-rapidapi-key': COVID_API_KEY
+    'x-rapidapi-key': RAPID_API_KEY
     }
 
 # TWITTER SEARCH SETTINGS
@@ -41,10 +50,10 @@ TWITTER_CONSUMER_KEY = os.environ.get('TWITTER_CONSUMER_KEY')
 TWITTER_CONSUMER_SECRET = os.environ.get('TWITTER_CONSUMER_SECRET')
 
 HASHTAGS = {}
-HASHTAGS['BTC'] = ['bitcoin', 'btc', 'bitcoinmining']
-HASHTAGS['ETH'] = ['ethereum', 'eth']
-HASHTAGS['XRP'] = ['ripple', 'xrp']
-HASHTAGS['LTC'] = ['litecoin', 'ltc']
+HASHTAGS['bitcoin'] = ['bitcoin', 'btc', 'bitcoinmining']
+HASHTAGS['ethereum'] = ['ethereum', 'eth']
+HASHTAGS['ripple'] = ['ripple', 'xrp']
+HASHTAGS['litecoin'] = ['litecoin', 'ltc']
 SINCE_ID = {}
 SINCE_ID['BTC'] = 0
 
@@ -74,15 +83,19 @@ def simple_sentiment(text):
 dict = {}
 
 time = str(datetime.now())[0:16]
-dict["time"] = time
 print("Current time: " + time)
 
 # Get data on our selected cryptocurrencies
-print(f"Getting data from coin api with key no.{CRYPTO_API_NUMBER}...", end="")
+print("Getting data from coin api...", end="")
+ids = ""
 for coin in COINS:
-    url = f'https://rest.coinapi.io/v1/exchangerate/{coin}/USD'
-    res = requests.get(url, headers=COIN_HEADERS)
-    dict[f"{coin}_PRICE_USD"] = float((res.json())["rate"])
+    ids += coin + ","
+querystring = {"ids": ids[:-1], "vs_currencies": "usd"}
+res = requests.request("GET", COIN_URL, headers=COIN_HEADERS, params=querystring)
+print(res.text)
+data = json.loads(res.text)
+for coin in COINS:
+    dict[f"{coin}_usd"] = float(data[coin]["usd"])
 print("Done")
 
 # Get COVID data on monitored countries
@@ -91,10 +104,10 @@ for mc in MONITORED_COUNTRIES:
     querystring = {"country": mc}
     response = requests.request("GET", URL_COVID, headers=HEADERS_COVID, params=querystring)
     data = response.json()["stat_by_country"][-1]
-    dict[f"{mc}_total_cases"] = data["total_cases"].replace(",", "")
+    dict[f"{mc}_tcases"] = data["total_cases"].replace(",", "")
     new_cases = data["new_cases"].replace(",", "")
-    dict[f"{mc}_new_cases"] = "0" if new_cases == "" else new_cases
-    dict[f"{mc}_total_deaths"] = data["total_deaths"].replace(",", "")
+    dict[f"{mc}_ncases"] = "0" if new_cases == "" else new_cases
+    dict[f"{mc}_tdeaths"] = data["total_deaths"].replace(",", "")
 print("Done")
 
 # Fetch tweets and determine if they have useful data
@@ -113,11 +126,11 @@ for coin in COINS:
             balance[sentiment] = balance.get(sentiment, 0) + 1
 
     if balance.get('Positive', 0) > balance.get('Negative', 0):
-        dict[f"{coin}_twitter"] = 1
+        dict[f"{coin}_web"] = 1
     elif balance.get('Positive', 0) < balance.get('Negative', 0):
-        dict[f"{coin}_twitter"] = 0
+        dict[f"{coin}_web"] = 0
     else:
-        dict[f"{coin}_twitter"] = 0.5
+        dict[f"{coin}_web"] = 0.5
     print("Done")
 
 
