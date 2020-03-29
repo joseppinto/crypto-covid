@@ -9,12 +9,6 @@ from ada import *
 import json
 
 
-if len(sys.argv) < 2:
-    exit(-1)
-
-# Get path for dataset we'll write on
-DATASET_FILE = sys.argv[1]
-
 
 # rapid api key
 RAPID_API_KEY = os.environ.get("RAPID_API_KEY")
@@ -33,7 +27,7 @@ COINS = ['bitcoin', 'ethereum', 'ripple', 'litecoin']
 
 
 # COVID API SETTINGS
-URL_COVID = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_particular_country.php"
+URL_COVID = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php"
 MONITORED_COUNTRIES = ['China', 'Italy', 'Iran', 'Spain',
                        'Germany', 'USA', 'France', 'S. Korea',
                        'Switzerland', 'UK', 'Portugal'
@@ -103,7 +97,9 @@ print("Getting data from COVID19 api...", end="")
 for mc in MONITORED_COUNTRIES:
     querystring = {"country": mc}
     response = requests.request("GET", URL_COVID, headers=HEADERS_COVID, params=querystring)
-    data = response.json()["stat_by_country"][-1]
+
+
+    data = response.json()["latest_stat_by_country"][0]
     dict[f"{mc}_tcases"] = data["total_cases"].replace(",", "")
     new_cases = data["new_cases"].replace(",", "")
     dict[f"{mc}_ncases"] = "0" if new_cases == "" else new_cases
@@ -132,28 +128,6 @@ for coin in COINS:
     else:
         dict[f"{coin}_web"] = 0.5
     print("Done")
-
-
-# Print new row to dataset
-print(f"Writing to dataset file({DATASET_FILE})...", end="")
-if os.path.exists(DATASET_FILE):
-    file = open(DATASET_FILE, 'a')
-else:
-    file = open(DATASET_FILE, 'w+')
-    line = ""
-    for c in dict.keys():
-        line += str(c) + ", "
-    file.write(line[:-2] + "\n")
-
-line = ""
-for c in dict.values():
-    line += str(c) + ", "
-file.write(line[:-2] + "\n")
-
-file.close()
-print("Done")
-
-
 
 
 # Send data to Adafruit IO feed

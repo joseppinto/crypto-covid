@@ -1,1 +1,3 @@
-/src/export_secrets.sh
+/a/
+src/data_prep/logs/
+src/data_prep/models/
