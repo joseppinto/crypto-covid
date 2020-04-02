@@ -8,9 +8,10 @@ import numpy as np
 import random
 import time
 import datetime
+import os
 
-IO_USERNAME = '62random'
-IO_KEY = 'aio_qzCd63hW93tAubENWmQ7H8UMwgJq'
+IO_USERNAME = os.environ.get('IO_USERNAME')
+IO_KEY = os.environ.get('IO_KEY')
 IO_FEED = 'crypto-covid'
 
 # Instance adafruit client and get data from specific feed
@@ -26,6 +27,10 @@ for d in data:
     if date.hour == 1 and 5 < date.minute < 10 and date.month >= 4:
         arr = str(date)[:10].split('-')
         row['timestamp'] = f"{int(arr[0]):02d}-{int(arr[1]):02d}-{int(arr[2]):02d}"
+        df = df.append(row, ignore_index=True)
+    elif date.month == 4 and date.day == 1 and date.hour == 11 and date.minute == 26:
+        arr = str(date)[:10].split('-')
+        row['timestamp'] = "2020-04-01"
         df = df.append(row, ignore_index=True)
 
 df = df.sort_values(['timestamp'], ascending=[1])
