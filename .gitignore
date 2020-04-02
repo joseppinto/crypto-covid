@@ -1,3 +1,7 @@
 /a/
 src/data_prep/logs/
-src/data_prep/models/
+src/data_prep/models/.idea/
+src/export_secrets.sh
+src/sensors/.log_sensor
+src/sensors/__pycache__
+.idea
