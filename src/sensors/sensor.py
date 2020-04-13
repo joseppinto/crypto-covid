@@ -51,6 +51,7 @@ HASHTAGS['litecoin'] = ['litecoin', 'ltc']
 SINCE_ID = {}
 SINCE_ID['BTC'] = 0
 
+
 # NLP function to determine if tweet has positive, neutral or negative sentiment
 def simple_sentiment(text):
     tokenizer = treebank.TreebankWordTokenizer()
@@ -129,6 +130,8 @@ for coin in COINS:
         dict[f"{coin}_web"] = 0.5
     print("Done")
 
+
+dict['time'] = time.time()
 
 # Send data to Adafruit IO feed
 print("Sending data to Adafruit IO...")

@@ -23,18 +23,15 @@ df = pd.DataFrame()
 
 for d in data:
     row = ast.literal_eval(d.value)
-    date = datetime.datetime.fromtimestamp(d.created_epoch)
-    if date.hour == 1 and 5 < date.minute < 10 and date.month >= 4:
-        arr = str(date)[:10].split('-')
-        row['timestamp'] = f"{int(arr[0]):02d}-{int(arr[1]):02d}-{int(arr[2]):02d}"
-        df = df.append(row, ignore_index=True)
-    elif date.month == 4 and date.day == 1 and date.hour == 11 and date.minute == 26:
-        arr = str(date)[:10].split('-')
-        row['timestamp'] = "2020-04-01"
-        df = df.append(row, ignore_index=True)
+    date = datetime.datetime.fromtimestamp(row['time'])
+    arr = str(date)[:10].split('-')
+    del row['time']
+    row['timestamp'] = f"{int(arr[0]):02d}-{int(arr[1]):02d}-{int(arr[2]):02d}"
+    df = df.append(row, ignore_index=True)
 
 df = df.sort_values(['timestamp'], ascending=[1])
 df.set_index('timestamp', inplace=True)
+
 
 for c in df.columns:
     if '_tdeaths' in c:
@@ -46,8 +43,11 @@ for c in df.columns:
 
 external = pd.read_csv('external_dataset.csv', index_col='timestamp')
 external.index.rename('timestamp', inplace=True)
+
+
+
 df = pd.concat([external, df])
 
 df.fillna(0, inplace=True)
 
-df.to_csv('dataset.csv', index_label=True)
+df.to_csv('dataset.csv', index=True)
