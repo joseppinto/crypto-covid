@@ -7,11 +7,12 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, LSTM
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
+import sys
 
 session_config = tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))
 sess = tf.compat.v1.Session(config=session_config)
 
-COIN = 'bitcoin'
+COIN = sys.argv[1]
 TIME_SERIES_LENGTH = 7
 
 
@@ -85,7 +86,7 @@ valid_x = valid_x[np.concatenate([major_indices, minor_indices])]
 valid_y = valid_y[np.concatenate([major_indices, minor_indices])]
 
 
-EPOCHS = 2500
+EPOCHS = 1000
 BATCH_SIZE = 128
 LEARNING_RATE = 0.0001
 
@@ -116,8 +117,12 @@ opt = Adam(lr=LEARNING_RATE)
 model.compile(loss='sparse_categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
 tensorboard = TensorBoard(log_dir=f'logs/{NAME}')
-filepath = "RNN_Final-{epoch:04d}-{val_accuracy:.3f}"
-checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max'))
+filepath = "{epoch:05d}-{val_accuracy:.5f}"
+checkpoint = ModelCheckpoint(f"models/{COIN}/{filepath}.model",
+                             monitor='val_accuracy',
+                             verbose=1,
+                             save_best_only=True,
+                             mode='max')
 
 history = model.fit(train_x, train_y,
                     batch_size=BATCH_SIZE,

@@ -34,7 +34,7 @@ country = ['China','Italy', 'Iran','Spain','Germany','USA','France','S. Korea','
 
 def previsao():
     prev = {}
-    f = open("../data/predictions.txt","r")
+    f = open("../../data/predictions.txt","r")
     for linha in f:
         k_v = re.split('=',linha.strip())
         if k_v[1]=='1':

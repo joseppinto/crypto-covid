@@ -6,3 +6,4 @@ src/sensors/.log_sensor
 src/sensors/__pycache__
 .idea
 /data/raw_datasets/a/
+/data/predictions.txt
