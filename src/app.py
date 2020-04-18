@@ -48,196 +48,7 @@ prev = previsao()
 # Step 4. Create a Dash layout
 app.layout = html.Div(
         html.Div([
-            dbc.Row(
-                [
-                    dbc.Col(
-                         html.H1(children='Estatísticas Covid-19', 
-                                 style={
-                                    'textAlign': 'center'
-                                 }
-                                ),
-                    )
-                ],
-                style={"height": "10vh"},
-            ),
-            dbc.Row(
-                [
-                    dbc.Col( 
-                        dcc.Markdown(
-                            '''**País**'''
-                        ),
-                        width=1
-                    ),
-                    dbc.Col(
-                        dcc.Dropdown(
-                            id='yaxis-column',
-                            options=[{'label': i, 'value': i} for i in country],
-                            value='Portugal'
-                        ),
-                        width=3
-                    )
-                ],
-                no_gutters=True,
-                justify="start"
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Markdown(
-                            '''**Analisar**'''
-                        ),
-                        width=1
-                    ),
-                    dbc.Col(
-                        dcc.Checklist(
-                            id = "yaxis-type",
-                            options=[
-                                {'label': 'Confirmed', 'value': 'confirmed'},
-                                {'label': 'Deaths', 'value': 'deaths'},
-                            ],
-                            value=['confirmed', 'deaths'],
-                        )
-                    )
-                ],
-                no_gutters=True
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Tabs(
-                            [
-                                dcc.Tab(label='Número de caso acumulados', children=[
-                                    html.Div(id='acumulados-graph')
-                                ]),
-                                dcc.Tab(label='Taxa de crescimento diária', children=[
-                                    html.Div(id='percentagem-graph')
-                                ])
-                            ],
-                            colors={
-                                "border": "white",
-                                "primary": "gold",
-                                "background": "cornsilk"
-                            }
-                        )
-                    )
-                ],
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Markdown(
-                            '''**Dia**'''
-                        ),
-                        width=1
-                    ),
-                    dbc.Col(
-                        dcc.DatePickerSingle(
-                            id = 'date-time',
-                            display_format='MMM Do, YY',
-                            month_format='MMM Do, YY',
-                            placeholder='MMM Do, YY',
-                            min_date_allowed=in_cov,
-                            max_date_allowed=recent_date,
-                            date=recent_date
-                        )  
-                    )
-                ]
-
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Graph(
-                            id='compare-countries',
-                        )
-                    )
-                ],
-                justify="start"
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                         html.H1(children='Estatísticas Preço das Criptomoedas', 
-                                 style={
-                                    'textAlign': 'center'
-                                 }
-                                ),
-                    )
-                ],
-                style={"height": "10vh"},
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Markdown(
-                            '''**Ano**'''
-                        ),
-                        width=1
-                    ),
-                    dbc.Col(
-                        dcc.Dropdown(
-                            id='year-cripto',
-                            options=[{'label': i, 'value': i} for i in years],
-                            value='2020'
-                        ),
-                        width=3       
-                    ),
-                ],
-                no_gutters=True
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dcc.Markdown(
-                            '''**Criptomoedas**'''
-                        ),
-                        width=1
-                    ),
-                    dbc.Col(
-                        dcc.Checklist(
-                            id = "cripto-type",
-                            options=[
-                                {'label': 'Bitcoin', 'value': 'bitcoin_usd'},
-                                {'label': 'Ethereum', 'value': 'ethereum_usd'},
-                                {'label': 'Ripple', 'value': 'ripple_usd'},
-                                {'label': 'Litecoin', 'value': 'litecoin_usd'}
-                            ],
-                            value=['bitcoin_usd', 'ethereum_usd', 'ripple_usd', 'litecoin_usd'],
-                        )
-                    )
-                ],
-                no_gutters=True,
-                justify="start"
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(id='compare-cripto')
-                    )
-                ],
-                justify="start"
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                       dcc.Markdown(
-                            '''**Meses**'''
-                        ),
-                       width="auto" 
-                    ),
-                    dbc.Col(
-                        dcc.RangeSlider(
-                            id = 'slider',
-                            marks = month_mark,
-                            min = 1,
-                            max = 12,
-                            value = [1, 3]
-                        ) 
-                    )
-                ],
-                style={"height": "10vh"},
-            ),
-            dbc.Row(
+                        dbc.Row(
                 [
                     dbc.Col(
                          html.H1(children='Previsão do Preço das Criptomoedas', 
@@ -287,6 +98,206 @@ app.layout = html.Div(
                     )
                 ],
                 justify="start"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                         html.H1(children='Estatísticas Covid-19', 
+                                 style={
+                                    'textAlign': 'center'
+                                 }
+                                ),
+                    )
+                ],
+                style={"height": "10vh"},
+            ),
+            dbc.Row(
+                [
+                    dbc.Col( 
+                        dcc.Markdown(
+                            '''**País**'''
+                        ),
+                        width=1,
+                    ),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id='yaxis-column',
+                            options=[{'label': i, 'value': i} for i in country],
+                            value='Portugal'
+                        ),
+                        width=3,
+                    )
+                ],
+                no_gutters=True,
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Markdown(
+                            '''**Analisar**'''
+                        ),
+                        width=1
+                    ),
+                    dbc.Col(
+                        dcc.Checklist(
+                            id = "yaxis-type",
+                            options=[
+                                {'label': 'Confirmed', 'value': 'confirmed'},
+                                {'label': 'Deaths', 'value': 'deaths'},
+                            ],
+                            value=['confirmed', 'deaths'],
+                        ),
+                        width=3
+                    )
+                ],
+                no_gutters=True,
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Tabs(
+                            [
+                                dcc.Tab(label='Número de caso acumulados', children=[
+                                    html.Div(id='acumulados-graph')
+                                ]),
+                                dcc.Tab(label='Taxa de crescimento diária', children=[
+                                    html.Div(id='percentagem-graph')
+                                ])
+                            ],
+                            colors={
+                                "border": "white",
+                                "primary": "gold",
+                                "background": "cornsilk"
+                            }
+                        ),
+                        width=6
+                    )
+                ],
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Markdown(
+                            '''**Dia**'''
+                        ),
+                        width=1
+                    ),
+                    dbc.Col(
+                        dcc.DatePickerSingle(
+                            id = 'date-time',
+                            display_format='MMM Do, YY',
+                            month_format='MMM Do, YY',
+                            placeholder='MMM Do, YY',
+                            min_date_allowed=in_cov,
+                            max_date_allowed=recent_date,
+                            date=recent_date
+                        ),
+                        width=3  
+                    )
+                ],
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Graph(
+                            id='compare-countries',
+                        ),
+                        width=6
+                    )
+                ],
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                         html.H1(children='Estatísticas Preço das Criptomoedas', 
+                                 style={
+                                    'textAlign': 'center'
+                                 }
+                                ),
+                    )
+                ],
+                style={"height": "10vh"},
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Markdown(
+                            '''**Ano**'''
+                        ),
+                        width=1
+                    ),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id='year-cripto',
+                            options=[{'label': i, 'value': i} for i in years],
+                            value='2020'
+                        ),
+                        width=3       
+                    ),
+                ],
+                no_gutters=True,
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dcc.Markdown(
+                            '''**Criptomoedas**'''
+                        ),
+                        width=1
+                    ),
+                    dbc.Col(
+                        dcc.Checklist(
+                            id = "cripto-type",
+                            options=[
+                                {'label': 'Bitcoin', 'value': 'bitcoin_usd'},
+                                {'label': 'Ethereum', 'value': 'ethereum_usd'},
+                                {'label': 'Ripple', 'value': 'ripple_usd'},
+                                {'label': 'Litecoin', 'value': 'litecoin_usd'}
+                            ],
+                            value=['bitcoin_usd', 'ethereum_usd', 'ripple_usd', 'litecoin_usd'],
+                        ),
+                        width=3
+                    ),
+                ],
+                no_gutters=True,
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Div(id='compare-cripto'),
+                        width=6
+                    )
+                ],
+                justify="center"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                       dcc.Markdown(
+                            '''**Meses**'''
+                        ),
+                       width="auto" 
+                    ),
+                    dbc.Col(
+                        dcc.RangeSlider(
+                            id = 'slider',
+                            marks = month_mark,
+                            min = 1,
+                            max = 12,
+                            value = [1, 3]
+                        ),
+                        width=6
+                    )
+                ],
+                style={"height": "10vh"},
+                justify="center"
             ),
         ]
     )
