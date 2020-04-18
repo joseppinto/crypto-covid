@@ -3,11 +3,9 @@ from collections import deque
 import numpy as np
 import random
 import tensorflow as tf
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, LSTM
-from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
-from tensorflow.keras.optimizers import Adam
 import sys
+from os import listdir
+from os.path import isfile, join
 
 session_config = tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))
 sess = tf.compat.v1.Session(config=session_config)
@@ -65,4 +63,11 @@ df['target'] = list(map(price_variation, df[f"{COIN}_usd"], df["future"]))
 x, y = preprocess_df(df)
 
 
+model_path = [join(f"models/{COIN}", f) for f in listdir(f"models/{COIN}")][-1]
+
+
+model = tf.keras.models.load_model(model_path)
+pred = model.predict(np.array([x[-1]]))[0]
+
+print(f"{COIN}={pred[0]},{pred[1]}")
 
