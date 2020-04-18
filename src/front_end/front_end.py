@@ -13,7 +13,7 @@ import re
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Step 2. Import the dataset
-df = pd.read_csv("../data/dataset.csv")
+df = pd.read_csv("../../data/dataset.csv")
 
 #Reduz o dataset a partir dos primeiros caso
 dfc = df[df['China_confirmed']>0]
