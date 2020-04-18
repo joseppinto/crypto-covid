@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import re
+from datetime import datetime as dt
+
 
 # Step 1. Launch the application
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -17,8 +19,9 @@ df = pd.read_csv("../../data/dataset.csv")
 
 #Reduz o dataset a partir dos primeiros caso
 dfc = df[df['China_confirmed']>0]
-recent_date =  dfc['True'].max()
-old_date = df['True'].min()
+recent_date =  dfc['timestamp'].max()
+old_date = df['timestamp'].min()
+in_cov = dfc['timestamp'].min()
 
 recent_year = int(re.split('-',recent_date)[0])
 old_year = int(re.split('-',old_date)[0])
@@ -29,9 +32,34 @@ month_mark = {i+1 : month[i] for i in range(0, 12)}
 
 country = ['China','Italy', 'Iran','Spain','Germany','USA','France','S. Korea','Switzerland','UK','Portugal']
 
+def previsao():
+    prev = {}
+    f = open("../data/predictions.txt","r")
+    for linha in f:
+        k_v = re.split('=',linha.strip())
+        if k_v[1]=='1':
+            prev[k_v[0]] = 'Aumenta'
+        else:
+            prev[k_v[0]] = 'Diminui' 
+    return prev
+
+prev = previsao()
+
 # Step 4. Create a Dash layout
 app.layout = html.Div(
         html.Div([
+            dbc.Row(
+                [
+                    dbc.Col(
+                         html.H1(children='Estatísticas Covid-19', 
+                                 style={
+                                    'textAlign': 'center'
+                                 }
+                                ),
+                    )
+                ],
+                style={"height": "10vh"},
+            ),
             dbc.Row(
                 [
                     dbc.Col( 
@@ -103,16 +131,18 @@ app.layout = html.Div(
                         width=1
                     ),
                     dbc.Col(
-                        dcc.Dropdown(
-                            id='time-down',
-                            options=[{'label': i, 'value': i} for i in dfc['True']],
-                            value=recent_date
-                        ),
-                        width=3
+                        dcc.DatePickerSingle(
+                            id = 'date-time',
+                            display_format='MMM Do, YY',
+                            month_format='MMM Do, YY',
+                            placeholder='MMM Do, YY',
+                            min_date_allowed=in_cov,
+                            max_date_allowed=recent_date,
+                            date=recent_date
+                        )  
                     )
-                ],
-                no_gutters=True,
-                justify="start"
+                ]
+
             ),
             dbc.Row(
                 [
@@ -123,6 +153,18 @@ app.layout = html.Div(
                     )
                 ],
                 justify="start"
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                         html.H1(children='Estatísticas Preço das Criptomoedas', 
+                                 style={
+                                    'textAlign': 'center'
+                                 }
+                                ),
+                    )
+                ],
+                style={"height": "10vh"},
             ),
             dbc.Row(
                 [
@@ -192,8 +234,60 @@ app.layout = html.Div(
                             value = [1, 3]
                         ) 
                     )
-                ]
-            )
+                ],
+                style={"height": "10vh"},
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                         html.H1(children='Previsão do Preço das Criptomoedas', 
+                                 style={
+                                    'textAlign': 'center'
+                                 }
+                                ),
+                    )
+                ],
+                style={"height": "10vh"},
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dash_table.DataTable(
+                            data=[prev],
+                            columns=[{'id': c, 'name': c} for c in prev.keys()],
+
+                            style_table={
+                                'height': 200
+                            },
+                            style_cell=
+                                {
+                                    'textAlign': 'left',
+                                    'height': 75,
+                                    'font-size': '20px',
+                                },
+                            style_data={
+                                'color': 'green'
+                            },
+                            style_data_conditional=[
+                                {
+                                    'if': {
+                                        'column_id': str(c),
+                                        'filter_query': '{{{0}}} eq Diminui'.format(c) 
+                                    },
+                                    'color': 'red',
+                                 }for c in prev.keys()
+                            ],
+                            style_header={
+                                'backgroundColor': 'rgb(230, 230, 230)',
+                                'fontWeight': 'bold'
+                            },
+                            style_as_list_view=True
+                        ),
+                        width={"size": 6, "offset": 3},
+                    )
+                ],
+                justify="start"
+            ),
         ]
     )
     
@@ -214,7 +308,7 @@ def update_graph_acumulados(yaxis_column_name,yaxis_type):
         dcc.Graph(
             figure={
                 "data": [
-                            go.Scatter(x = dff['True'],y = dff[yaxis_column_name + "_" + t],mode = "lines",name=t)for t in yaxis_type
+                            go.Scatter(x = dff['timestamp'],y = dff[yaxis_column_name + "_" + t],mode = "lines",name=t)for t in yaxis_type
                         ],
                 'layout': {
                     'title': yaxis_column_name,
@@ -239,13 +333,13 @@ def update_graph_percentagem(yaxis_column_name, yaxis_type):
     val = {}
     val['confirmed'] = obtemP(dfp,y_colum1)
     val['deaths'] = obtemP(dfp,y_colum2)
-    min = dfp['True'].min()
-    dfp = dfp[dfp['True']>min]
+    min = dfp['timestamp'].min()
+    dfp = dfp[dfp['timestamp']>min]
     return [
         dcc.Graph(
             figure={
                 "data": [
-                     go.Scatter(x = dfp['True'],y = val[t],mode = "lines",name=t)for t in yaxis_type
+                     go.Scatter(x = dfp['timestamp'],y = val[t],mode = "lines",name=t)for t in yaxis_type
                 ],
                 'layout': {
                     'title': yaxis_column_name + " ",
@@ -270,9 +364,9 @@ def getValues(col, dfa):
 
 @app.callback(
     Output('compare-countries', 'figure'),
-    [Input('time-down', 'value')])
+    [Input('date-time', 'date')])
 def update_graph_countries(day):
-    dfa = df[df['True'] == day]
+    dfa = df[df['timestamp'] == day]
     colC = ['China_confirmed', 'Italy_confirmed','Iran_confirmed', 'Spain_confirmed','Germany_confirmed', 'USA_confirmed','France_confirmed','S. Korea_confirmed','Switzerland_confirmed','UK_confirmed','Portugal_confirmed']
     colD = ['China_deaths', 'Italy_deaths','Iran_deaths', 'Spain_deaths','Germany_deaths', 'USA_deaths','France_deaths','S. Korea_deaths','Switzerland_deaths','UK_deaths','Portugal_deaths']
     lc = getValues(colC,dfa)
@@ -323,13 +417,13 @@ def update_graph_cripto(cripto,year,month):
     date_min = str(year) + "-" + ml + "-" + "01"
     date_max = str(year) + "-" + mu + "-" + "01"
 
-    dfcr1 = df[df['True'] >= date_min]
-    dfcr = dfcr1[dfcr1['True'] < date_max]
+    dfcr1 = df[df['timestamp'] >= date_min]
+    dfcr = dfcr1[dfcr1['timestamp'] < date_max]
     return [
         dcc.Graph(
             figure={
                 "data": [
-                     go.Scatter(x = dfcr['True'],y = dfcr[cri],mode = "lines",name=cri)for cri in cripto
+                     go.Scatter(x = dfcr['timestamp'],y = dfcr[cri],mode = "lines",name=cri)for cri in cripto
                 ],
                 "layout": {
                         "title": "Preço das criptomoedas",
