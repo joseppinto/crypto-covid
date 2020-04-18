@@ -69,5 +69,5 @@ model_path = [join(f"models/{COIN}", f) for f in listdir(f"models/{COIN}")][-1]
 model = tf.keras.models.load_model(model_path)
 pred = model.predict(np.array([x[-1]]))[0]
 
-print(f"{COIN}={pred[0]},{pred[1]}")
+print(f"{COIN}={pred[0]}")
 

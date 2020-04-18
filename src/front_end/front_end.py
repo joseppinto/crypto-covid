@@ -36,11 +36,12 @@ def previsao():
     prev = {}
     f = open("../../data/predictions.txt","r")
     for linha in f:
-        k_v = re.split('=',linha.strip())
-        if k_v[1]=='1':
-            prev[k_v[0]] = 'Aumenta'
+        k_v = re.split('=', linha.strip())
+        chance = float(k_v[1])
+        if chance > 0.5:
+            prev[k_v[0]] = f'Descida \n {chance * 100:.1f}% certeza'
         else:
-            prev[k_v[0]] = 'Diminui' 
+            prev[k_v[0]] = f'Aumento \n {100 - chance * 100:.1f}% certeza'
     return prev
 
 prev = previsao()
@@ -75,15 +76,18 @@ app.layout = html.Div(
                                     'textAlign': 'left',
                                     'height': 75,
                                     'font-size': '20px',
+                                    'text-align': 'center'
                                 },
                             style_data={
-                                'color': 'green'
+                                'color': 'green',
+                                'whiteSpace': 'pre-line',
+                                'text-align': 'center'
                             },
                             style_data_conditional=[
                                 {
                                     'if': {
                                         'column_id': str(c),
-                                        'filter_query': '{{{0}}} eq Diminui'.format(c) 
+                                        'filter_query': '{{{0}}} contains Descida'.format(c)
                                     },
                                     'color': 'red',
                                  }for c in prev.keys()
